@@ -2,43 +2,47 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-@app.route('/getmsg/', methods=['GET'])
-def respond():
-    # Retrieve the name from the url parameter /getmsg/?name=
-    name = request.args.get("name", None)
+# @app.route('/getmsg/', methods=['GET'])
+# def respond():
+#     # Retrieve the name from the url parameter /getmsg/?name=
+#     name = request.args.get("name", None)
 
-    # For debugging
-    print(f"Received: {name}")
+#     # For debugging
+#     print(f"Received: {name}")
 
-    response = {}
+#     response = {}
 
-    # Check if the user sent a name at all
-    if not name:
-        response["ERROR"] = "No name found. Please send a name."
-    # Check if the user entered a number
-    elif str(name).isdigit():
-        response["ERROR"] = "The name can't be numeric. Please send a string."
-    else:
-        response["MESSAGE"] = f"Welcome {name} to our awesome API!"
+#     # Check if the user sent a name at all
+#     if not name:
+#         response["ERROR"] = "No name found. Please send a name."
+#     # Check if the user entered a number
+#     elif str(name).isdigit():
+#         response["ERROR"] = "The name can't be numeric. Please send a string."
+#     else:
+#         response["MESSAGE"] = f"Welcome {name} to our awesome API!"
 
-    # Return the response in json format
-    return jsonify(response)
+#     # Return the response in json format
+#     return jsonify(response)
 
 
-@app.route('/post/', methods=['POST'])
+@app.route('/mark_attendance/', methods=['POST'])
 def post_something():
-    param = request.form.get('name')
-    print(param)
-    # You can add the test cases you made in the previous function, but in our case here you are just testing the POST functionality
-    if param:
-        return jsonify({
-            "Message": f"Welcome {name} to our awesome API!",
-            # Add this option to distinct the POST request
+    id = request.args.get('id', None)
+    print(id)
+    
+    # if id:
+    #     return jsonify({
+    #         "Message": f"Welcome {name} to our awesome API!",
+    #         # Add this option to distinct the POST request
+    #         "METHOD": "POST"
+    #     })
+    # else:
+    #     return jsonify({
+    #         "ERROR": "No name found. Please send a name."
+    #     })
+    return jsonify({
+            "Message": f"Welcome {id} to our awesome API!",
             "METHOD": "POST"
-        })
-    else:
-        return jsonify({
-            "ERROR": "No name found. Please send a name."
         })
 
 
