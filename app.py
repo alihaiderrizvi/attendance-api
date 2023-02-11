@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify
 app = Flask(__name__)
+import time
+from datetime import datetime
+import pytz
 
+region = 'Asia/Karachi'
 
 # @app.route('/getmsg/', methods=['GET'])
 # def respond():
@@ -26,24 +30,24 @@ app = Flask(__name__)
 
 
 @app.route('/mark_attendance/', methods=['POST'])
-def post_something():
+def mark_attendance():
     id = request.args.get('id', None)
-    print(id)
-    
-    # if id:
-    #     return jsonify({
-    #         "Message": f"Welcome {name} to our awesome API!",
-    #         # Add this option to distinct the POST request
-    #         "METHOD": "POST"
-    #     })
-    # else:
-    #     return jsonify({
-    #         "ERROR": "No name found. Please send a name."
-    #     })
-    return jsonify({
+    timezone = pytz.timezone(region)
+    current_time = datetime.now(timezone)
+
+    # put entry in DB
+    # generate message string to be sent to parents
+    # if difference between current time and already existing reporting time is less than 3 hrs, do nothing
+    # if difference between current time and already existing reporting time is greater than 3 hrs, mark departure time
+    # if date changes, mark reporting time
+
+    print(id, timezone, current_time, type(current_time))
+
+    return {
             "Message": f"Welcome {id} to our awesome API!",
-            "METHOD": "POST"
-        })
+            "METHOD": "POST",
+            "TIME": current_time
+        }
 
 
 @app.route('/')
@@ -53,5 +57,4 @@ def index():
 
 
 if __name__ == '__main__':
-    # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, port=5000)
