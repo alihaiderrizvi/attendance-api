@@ -1,53 +1,75 @@
 from flask import Flask, request, jsonify
-app = Flask(__name__)
+import os
+import psycopg2
+from dotenv import load_dotenv
 import time
-from datetime import datetime
+from datetime import datetime, date
 import pytz
+from utils import *
 
-region = 'Asia/Karachi'
+app = Flask(__name__)
 
-# @app.route('/getmsg/', methods=['GET'])
-# def respond():
-#     # Retrieve the name from the url parameter /getmsg/?name=
-#     name = request.args.get("name", None)
+load_dotenv()
+database_url = os.getenv("DATABASE_URL")
+region = os.getenv("REGION")
 
-#     # For debugging
-#     print(f"Received: {name}")
-
-#     response = {}
-
-#     # Check if the user sent a name at all
-#     if not name:
-#         response["ERROR"] = "No name found. Please send a name."
-#     # Check if the user entered a number
-#     elif str(name).isdigit():
-#         response["ERROR"] = "The name can't be numeric. Please send a string."
-#     else:
-#         response["MESSAGE"] = f"Welcome {name} to our awesome API!"
-
-#     # Return the response in json format
-#     return jsonify(response)
-
+connection = psycopg2.connect(database_url)
 
 @app.route('/mark_attendance/', methods=['POST'])
 def mark_attendance():
+    # fetch id
     id = request.args.get('id', None)
-    timezone = pytz.timezone(region)
-    current_time = datetime.now(timezone)
 
-    # put entry in DB
-    # generate message string to be sent to parents
-    # if difference between current time and already existing reporting time is less than 3 hrs, do nothing
-    # if difference between current time and already existing reporting time is greater than 3 hrs, mark departure time
-    # if date changes, mark reporting time
+    # get student details from db
+    details = get_student_details(id, connection)
 
-    print(id, timezone, current_time, type(current_time))
+    if details:
+        roll_no, name, class_, father_phone, mother_phone = res
+    else:
+        return
 
-    return {
-            "Message": f"Welcome {id} to our awesome API!",
-            "METHOD": "POST",
-            "TIME": current_time
-        }
+    # get current date and time
+    current_datetime, current_time, current_date = get_time_details(region)
+
+    # fetch latest entry from attendance
+    latest_entry = fetch_latest_entry(id, connection)
+    
+    if latest_entry:
+        latest_entry = latest_entry[0]
+        attendance_id, reporting_time, departure_time = latest_entry
+        time_diff = current_datetime - reporting_time
+        min_in_day = 24 * 60
+        time_diff_min = time_diff.total_seconds() // 60
+
+        # repeated thumbprints - bacha masti krra hai
+        if time_diff <= 60:
+            return
+
+        # if difference is within 12 hours, mark departure
+        elif time_diff <= 720:
+            ACTIVE_QUERY = UPDATE_DEPARTURE
+            args = (current_datetime, id,)
+            message_type = DEPARTURE_MESSAGE_TYPE
+        
+        # if difference is greater than 12 hours, mark new entrance
+        else:
+            ACTIVE_QUERY = INSERT_ENTRANCE
+            args = (id, roll_no, name, current_date, current_datetime,)
+            message_type = ARRIVAL_MESSAGE_TYPE
+
+    else:
+        ACTIVE_QUERY = INSERT_ENTRANCE
+        args = (id, roll_no, name, current_date, current_datetime,)
+        message_type = ARRIVAL_MESSAGE_TYPE
+    
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(ACTIVE_QUERY, args)
+    
+    message = get_message(name, message_type)
+    payload = create_payload(message, father_phone, mother_phone)
+
+    return payload
 
 
 @app.route('/')
@@ -57,4 +79,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(threaded=True, port=5000)
+    # app.run(threaded=True, port=5000)
