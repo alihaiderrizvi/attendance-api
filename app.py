@@ -3,7 +3,7 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pytz
 from utils import *
 
@@ -24,7 +24,7 @@ def mark_attendance():
     details = get_student_details(id, connection)
 
     if details:
-        roll_no, name, class_, father_phone, mother_phone = res
+        roll_no, name, class_, father_phone, mother_phone = details
     else:
         return
 
@@ -38,15 +38,14 @@ def mark_attendance():
         latest_entry = latest_entry[0]
         attendance_id, reporting_time, departure_time = latest_entry
         time_diff = current_datetime - reporting_time
-        min_in_day = 24 * 60
         time_diff_min = time_diff.total_seconds() // 60
 
         # repeated thumbprints - bacha masti krra hai
-        if time_diff <= 60:
+        if time_diff <= timedelta(minutes=60):
             return
 
         # if difference is within 12 hours, mark departure
-        elif time_diff <= 720:
+        elif time_diff <= timedelta(minutes=720):
             ACTIVE_QUERY = UPDATE_DEPARTURE
             args = (current_datetime, id,)
             message_type = DEPARTURE_MESSAGE_TYPE

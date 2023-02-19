@@ -1,4 +1,5 @@
-
+import pytz
+from datetime import datetime, date
 
 ARRIVAL_MESSAGE_TYPE = 1
 DEPARTURE_MESSAGE_TYPE = 2
@@ -48,19 +49,6 @@ UPDATE_DEPARTURE = """
                                 WHERE STUDENT_ID = %s
                             );
                 """
-
-# def insert_dummy_data():
-#     timezone = pytz.timezone(region)
-
-#     student_id = 1
-#     roll_no = "T9-01"
-#     st_name = "Rooh Allah"
-#     datee = date.today() # add timezone
-#     reporting_time = datetime.now(timezone)
-    
-#     with connection:
-#         with connection.cursor() as cursor:
-#             cursor.execute(INSERT_ENTRANCE, (student_id, roll_no, st_name, datee, reporting_time,))
 
 def get_student_details(id, connection):
     with connection:
@@ -115,3 +103,17 @@ def create_payload(message, father_phone, mother_phone):
     }
     
     return payload
+
+
+# def insert_dummy_data():
+#     timezone = pytz.timezone(region)
+
+#     student_id = 1
+#     roll_no = "T9-01"
+#     st_name = "Rooh Allah"
+#     datee = date.today() # add timezone
+#     reporting_time = datetime.now(timezone)
+    
+#     with connection:
+#         with connection.cursor() as cursor:
+#             cursor.execute(INSERT_ENTRANCE, (student_id, roll_no, st_name, datee, reporting_time,))
