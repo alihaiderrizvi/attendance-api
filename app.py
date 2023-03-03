@@ -26,7 +26,7 @@ def mark_attendance():
     if details:
         roll_no, name, class_, father_phone, mother_phone = details
     else:
-        return
+        return {}
 
     # get current date and time
     current_datetime, current_time, current_date = get_time_details(region)
@@ -42,7 +42,7 @@ def mark_attendance():
 
         # repeated thumbprints - bacha masti krra hai
         if time_diff <= timedelta(minutes=60):
-            return
+            return {}
 
         # if difference is within 12 hours, mark departure
         elif time_diff <= timedelta(minutes=720):
