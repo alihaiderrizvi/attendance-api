@@ -15,8 +15,9 @@ region = os.getenv("REGION")
 
 connection = psycopg2.connect(database_url)
 
-@app.route('/mark_attendance/', methods=['POST'])
+@app.route('/mark_attendance/', methods=['POST', 'GET'])
 def mark_attendance():
+    print("Request Method:", request.method)
     # fetch id
     id = request.args.get('id', None)
 
