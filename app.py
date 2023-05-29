@@ -13,7 +13,7 @@ load_dotenv()
 database_url = os.getenv("DATABASE_URL")
 region = os.getenv("REGION")
 
-connection = psycopg2.connect(database_url)
+# connection = psycopg2.connect(database_url)
 
 @app.route('/mark_attendance/', methods=['POST', 'GET'])
 def mark_attendance():
