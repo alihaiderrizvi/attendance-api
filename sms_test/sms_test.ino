@@ -30,8 +30,8 @@ TinyGsm modem(SerialAT);
 #endif
 
 // Set phone numbers, if you want to test SMS and Calls
-#define SMS_TARGET  "+923452500143"
-#define CALL_TARGET "+923452500143"
+#define SMS_TARGET  "+923133311194"
+#define CALL_TARGET "+923152446692"
 
 
 
