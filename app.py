@@ -1,31 +1,39 @@
 from flask import Flask, request, jsonify
+from pymongo import MongoClient
 import os
-import psycopg2
 from dotenv import load_dotenv
 import time
 from datetime import datetime, date, timedelta
 import pytz
-from utils import *
+from utils import get_time_details, DEPARTURE_MESSAGE_TYPE, ARRIVAL_MESSAGE_TYPE, get_message, create_payload
+from DB_connection import attendance_db
+from db_functions import get_student_details, fetch_latest_entry, update_departure, insert_reporting
 
 app = Flask(__name__)
 
 load_dotenv()
-database_url = os.getenv("DATABASE_URL")
 region = os.getenv("REGION")
-
-connection = psycopg2.connect(database_url)
 
 @app.route('/mark_attendance/', methods=['POST', 'GET'])
 def mark_attendance():
     print("Request Method:", request.method)
     # fetch id
-    id = request.args.get('id', None)
+    id = str(request.args.get('id', None))
 
     # get student details from db
-    details = get_student_details(id, connection)
+    details = get_student_details(id, attendance_db)
 
     if details:
-        roll_no, name, class_, father_phone, mother_phone = details
+        roll_no, \
+        name, \
+        class_, \
+        father_phone, \
+        mother_phone = \
+        details['roll_no'], \
+        details['name'], \
+        details['class'], \
+        details['father_phone'], \
+        details['mother_phone']
     else:
         return {}
 
@@ -33,7 +41,7 @@ def mark_attendance():
     current_datetime, current_time, current_date = get_time_details(region)
 
     # fetch latest entry from attendance
-    latest_entry = fetch_latest_entry(id, connection)
+    latest_entry = fetch_latest_entry(id, attendance_db)
     
     if latest_entry:
         latest_entry = latest_entry[0]
@@ -47,24 +55,23 @@ def mark_attendance():
 
         # if difference is within 12 hours, mark departure
         elif time_diff <= timedelta(minutes=720):
-            ACTIVE_QUERY = UPDATE_DEPARTURE
-            args = (current_datetime, id,)
+            name = update_departure(id, current_datetime, attendance_db)
             message_type = DEPARTURE_MESSAGE_TYPE
         
         # if difference is greater than 12 hours, mark new entrance
         else:
-            ACTIVE_QUERY = INSERT_ENTRANCE
-            args = (id, roll_no, name, current_date, current_datetime,)
+            ACTIVE_QUERY = insert_reporting(id, roll_no, name, current_date, current_datetime, attendance_db)
+            # args = (id, roll_no, name, current_date, current_datetime,)
             message_type = ARRIVAL_MESSAGE_TYPE
 
     else:
-        ACTIVE_QUERY = INSERT_ENTRANCE
-        args = (id, roll_no, name, current_date, current_datetime,)
+        ACTIVE_QUERY = insert_reporting(id, roll_no, name, current_date, current_datetime, attendance_db)
+        # args = (id, roll_no, name, current_date, current_datetime,)
         message_type = ARRIVAL_MESSAGE_TYPE
     
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(ACTIVE_QUERY, args)
+    # with connection:
+    #     with connection.cursor() as cursor:
+    #         cursor.execute(ACTIVE_QUERY, args)
     
     message = get_message(name, message_type)
     payload = create_payload(message, father_phone, mother_phone)
