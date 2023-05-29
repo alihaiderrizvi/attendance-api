@@ -50,18 +50,18 @@ UPDATE_DEPARTURE = """
                             );
                 """
 
-def get_student_details(id, connection):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(STUDENT_DETAILS, (id,))
-            res = cursor.fetchone()
+# def get_student_details(id, connection):
+#     with connection:
+#         with connection.cursor() as cursor:
+#             cursor.execute(STUDENT_DETAILS, (id,))
+#             res = cursor.fetchone()
     
-    if res:
-        roll_no, name, class_, father_phone, mother_phone = res
-    else:
-        res = None
+#     if res:
+#         roll_no, name, class_, father_phone, mother_phone = res
+#     else:
+#         res = None
     
-    return res
+#     return res
 
 def get_time_details(region):
     timezone = pytz.timezone(region)
@@ -71,13 +71,13 @@ def get_time_details(region):
 
     return current_datetime, current_time, current_date
 
-def fetch_latest_entry(id, connection):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(LAST_ENTRY, (id,))
-            res = cursor.fetchall()
+# def fetch_latest_entry(id, connection):
+#     with connection:
+#         with connection.cursor() as cursor:
+#             cursor.execute(LAST_ENTRY, (id,))
+#             res = cursor.fetchall()
     
-    return res
+#     return res
 
 def get_message(name, message_type):
     if message_type == ARRIVAL_MESSAGE_TYPE:
