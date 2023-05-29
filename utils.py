@@ -91,23 +91,23 @@ def create_payload(message, father_phone, mother_phone):
     numbers = []
     for i in father_phone:
         if (i.startswith('0') and len(i) == 11):
-            i = '92' + i[1:]
-            numbers.append(int(i))
-        elif (i.startswith('+92') and len(i) == 13):
-            i = i[1:]
-            numbers.append(int(i))
+            i = '+92' + i[1:]
+            numbers.append(i)
         elif (i.startswith('92') and len(i) == 12):
-            numbers.append(int(i))
+            i = '+' + i
+            numbers.append(i)
+        elif (i.startswith('92') and len(i) == 12):
+            numbers.append(i)
 
     for i in mother_phone:
         if (i.startswith('0') and len(i) == 11):
-            i = '92' + i[1:]
-            numbers.append(int(i))
-        elif (i.startswith('+92') and len(i) == 13):
-            i = i[1:]
-            numbers.append(int(i))
+            i = '+92' + i[1:]
+            numbers.append(i)
         elif (i.startswith('92') and len(i) == 12):
-            numbers.append(int(i))
+            i = '+' + i
+            numbers.append(i)
+        elif (i.startswith('92') and len(i) == 12):
+            numbers.append(i)
     
     payload = {
         "message": message,
