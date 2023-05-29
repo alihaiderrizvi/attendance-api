@@ -60,12 +60,12 @@ def mark_attendance():
         
         # if difference is greater than 12 hours, mark new entrance
         else:
-            ACTIVE_QUERY = insert_reporting(id, roll_no, name, current_date, current_datetime, attendance_db)
+            name = insert_reporting(id, roll_no, name, current_date, current_datetime, attendance_db)
             # args = (id, roll_no, name, current_date, current_datetime,)
             message_type = ARRIVAL_MESSAGE_TYPE
 
     else:
-        ACTIVE_QUERY = insert_reporting(id, roll_no, name, current_date, current_datetime, attendance_db)
+        name = insert_reporting(id, roll_no, name, current_date, current_datetime, attendance_db)
         # args = (id, roll_no, name, current_date, current_datetime,)
         message_type = ARRIVAL_MESSAGE_TYPE
     
