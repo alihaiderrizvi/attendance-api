@@ -29,7 +29,11 @@ def insert_reporting(fingerprint_id, roll_no, name, current_date, reporting_time
 
     result = attendance_db.attendance.insert_one(document)
 
-    # print("Inserted document ID:", result.inserted_id)
+    query = {"fingerprint_id": fingerprint_id}
+    result = attendance_db.students.find_one(query, {"name": 1})
+    student_name = result['name']
+
+    return student_name
 
 def insert_departure(attendance_db, student_id, roll_no, student_name, date, departure_time):
     # Prepare the document to be inserted
@@ -50,9 +54,8 @@ def update_departure(fingerprint_id, current_datetime, attendance_db):
     filter = {"fingerprint_id": fingerprint_id}
     update = {"$set": {"departure_time": current_datetime}}
     result = attendance_db.update_one(filter, update, sort=[("reporting_time", -1)])
-    # print("Modified document count:", result.modified_count)
+
     query = {"fingerprint_id": fingerprint_id}
-    
     result = attendance_db.students.find_one(query, {"name": 1})
     student_name = result['name']
 
