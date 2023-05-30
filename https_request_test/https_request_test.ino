@@ -35,7 +35,7 @@
 #define MODEM_RX 26
 #define I2C_SDA 21
 #define I2C_SCL 22
-#define LED_PIN 13
+#define LED_PIN 25
 #define IP5306_ADDR 0x75
 #define IP5306_REG_SYS_CTL0 0x00
 
@@ -65,49 +65,6 @@ TinyGsm sim_modem(SerialAT);
 TinyGsmClient gsm_transpor_layer(sim_modem);
 SSLClient secure_presentation_layer(&gsm_transpor_layer);
 HttpClient http_client = HttpClient(secure_presentation_layer, hostname, port);
-
-// Power configuration for SIM800L_IP5306_VERSION_20190610 (v1.3) board
-bool setupPMU()
-{
-  bool en = true;
-  Wire.begin(I2C_SDA, I2C_SCL);
-  Wire.beginTransmission(IP5306_ADDR);
-  Wire.write(IP5306_REG_SYS_CTL0);
-  if (en)
-  {
-    Wire.write(0x37);
-  }
-  else
-  {
-    Wire.write(0x35);
-  }
-  return Wire.endTransmission() == 0;
-}
-
-// Modem initial setup (cold start)
-void setupModem()
-{
-  pinMode(MODEM_RST, OUTPUT);
-  pinMode(MODEM_PWRKEY, OUTPUT);
-  pinMode(MODEM_POWER_ON, OUTPUT);
-  pinMode(LED_PIN, OUTPUT);
-  
-  // Reset pin high
-  digitalWrite(MODEM_RST, HIGH);
-
-  // Turn on the Modem power first
-  digitalWrite(MODEM_POWER_ON, HIGH);
-
-  // Pull down PWRKEY for more than 1 second according to manual requirements
-  digitalWrite(MODEM_PWRKEY, HIGH);
-  delay(200);
-  digitalWrite(MODEM_PWRKEY, LOW);
-  delay(1200);
-  digitalWrite(MODEM_PWRKEY, HIGH);
-
-  // Initialize the indicator as an output
-  digitalWrite(LED_PIN, LOW);
-}
 
 void setup()
 {
