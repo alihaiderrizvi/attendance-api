@@ -8,6 +8,7 @@ import pytz
 from utils import get_time_details, DEPARTURE_MESSAGE_TYPE, ARRIVAL_MESSAGE_TYPE, get_message, create_payload
 from DB_connection import attendance_db
 from db_functions import get_student_details, fetch_latest_entry, update_departure, insert_reporting
+from dateutil import parser
 
 app = Flask(__name__)
 
@@ -22,6 +23,7 @@ def mark_attendance():
 
     # get student details from db
     details = get_student_details(id, attendance_db)
+    print(details)
 
     if details:
         roll_no, \
@@ -36,7 +38,8 @@ def mark_attendance():
         details['mother_phone']
     else:
         return {}
-
+    
+    print(father_phone, mother_phone)
     # get current date and time
     current_datetime, current_time, current_date = get_time_details(region)
 
@@ -44,13 +47,16 @@ def mark_attendance():
     latest_entry = fetch_latest_entry(id, attendance_db)
     
     if latest_entry:
-        latest_entry = latest_entry[0]
-        attendance_id, reporting_time, departure_time = latest_entry
+        # latest_entry = latest_entry['reporting_time']
+        print(latest_entry)
+        reporting_time = latest_entry['reporting_time']
+        print(reporting_time, type(reporting_time))
+        reporting_time = parser.parse(reporting_time)
         time_diff = current_datetime - reporting_time
         time_diff_min = time_diff.total_seconds() // 60
 
         # repeated thumbprints - bacha masti krra hai
-        if time_diff <= timedelta(minutes=60):
+        if time_diff <= timedelta(minutes=1):
             return {}
 
         # if difference is within 12 hours, mark departure
@@ -85,5 +91,6 @@ def index():
 
 
 if __name__ == '__main__':
+    app.debug = True
     app.run(threaded=True, port=5000)
     
