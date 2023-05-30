@@ -78,7 +78,6 @@ def mark_attendance():
 
     return payload
 
-
 @app.route('/')
 def index():
     # A welcome message to test our server
