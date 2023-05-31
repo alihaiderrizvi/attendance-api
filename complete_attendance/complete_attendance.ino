@@ -1,8 +1,3 @@
-/*********
-  Rui Santos
-  Complete project details at https://randomnerdtutorials.com  
-*********/
-
 #include <Wire.h>
 
 #include <Adafruit_Fingerprint.h>
@@ -57,19 +52,22 @@ SSLClient secure_presentation_layer(&gsm_transpor_layer);
 HttpClient http_client = HttpClient(secure_presentation_layer, hostname, port);
 
 
-
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&Serial1); // change Serial1 pins in HardwareSerial.cpp file
 int fingerprintID = 0;
 
+
+StaticJsonBuffer<300> jsonBuffer;
+
+const int buzzer = 32;
+
 void setup(){
+  pinMode(buzzer, OUTPUT);
   //Fingerprint sensor module setup
   Serial.begin(9600);
   Serial2.begin(115200);
   // set the data rate for the sensor serial port
   finger.begin(57600);
   delay(100);
-
-  Serial.println(finger.verifyPassword());
   
   if (finger.verifyPassword()) {
     Serial.println("Found fingerprint sensor!");
@@ -81,6 +79,7 @@ void setup(){
 
   setupSim();
   int status = initializeSim();
+  buzzer_tone_double(buzzer);
 }
 
 void loop(){
@@ -91,31 +90,9 @@ void loop(){
   // Serial.println(fingerprintID);
   
   if (fingerprintID > 0){
+    buzzer_tone_single(buzzer);
     Serial.print("ID: ");
     Serial.println(fingerprintID);
     mark_attendance(fingerprintID);
-  }
-}
-
-
-void mark_attendance(int fingerprintID){
-
-  String endpoint = "/mark_attendance/";
-  String arg = "?id=";
-  String fingerID = String(fingerprintID);
-  String fullURL = endpoint + arg + fingerID;
-  Serial.println(fullURL);
-
-  if (sim_modem.isGprsConnected()){
-    Serial.println("Making GET request");
-    http_client.get(fullURL);
-
-    int status_code = http_client.responseStatusCode();
-    String response = http_client.responseBody();
-
-    Serial.print("Status code: ");
-    Serial.println(status_code);
-    Serial.print("Response: ");
-    Serial.println(response);
   }
 }
