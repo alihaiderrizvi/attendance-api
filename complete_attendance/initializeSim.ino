@@ -33,7 +33,7 @@ int initializeSim(){
   if (!sim_modem.waitForNetwork(240000L))
   {
     SerialMon.println(" fail");
-    delay(10000);
+    delay(5000);
     return -1;
   }
   SerialMon.println(" OK");
@@ -43,7 +43,7 @@ int initializeSim(){
   if (!sim_modem.isNetworkConnected())
   {
     SerialMon.println(" fail");
-    delay(10000);
+    delay(5000);
     return -1;
   }
   SerialMon.println(" OK");
@@ -54,7 +54,7 @@ int initializeSim(){
   if (!sim_modem.gprsConnect(apn, gprs_user, gprs_pass))
   {
     SerialMon.println(" fail");
-    delay(10000);
+    delay(5000);
     return -1;
   }
   digitalWrite(LED_PIN, HIGH);

@@ -16,7 +16,7 @@ void setupModem()
   digitalWrite(MODEM_PWRKEY, HIGH);
   delay(200);
   digitalWrite(MODEM_PWRKEY, LOW);
-  delay(1200);
+  delay(1100);
   digitalWrite(MODEM_PWRKEY, HIGH);
 
   // Initialize the indicator as an output

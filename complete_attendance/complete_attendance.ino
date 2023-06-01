@@ -84,7 +84,7 @@ void setup(){
 
 void loop(){
   fingerprintID = detect_finger();
-  delay(1500);
+  delay(500);
   
   // Serial.print("ID: ");
   // Serial.println(fingerprintID);
@@ -94,5 +94,6 @@ void loop(){
     Serial.print("ID: ");
     Serial.println(fingerprintID);
     mark_attendance(fingerprintID);
+    buzzer_tone_single(buzzer);
   }
 }
