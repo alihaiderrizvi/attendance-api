@@ -47,10 +47,7 @@ def mark_attendance():
     latest_entry = fetch_latest_entry(id, attendance_db)
     
     if latest_entry:
-        # latest_entry = latest_entry['reporting_time']
-        print(latest_entry)
         reporting_time = latest_entry['reporting_time']
-        print(reporting_time, type(reporting_time))
         reporting_time = parser.parse(reporting_time)
         time_diff = current_datetime - reporting_time
         time_diff_min = time_diff.total_seconds() // 60
@@ -81,7 +78,7 @@ def mark_attendance():
     
     message = get_message(name, message_type)
     payload = create_payload(message, father_phone, mother_phone)
-
+    print(payload)
     return payload
 
 @app.route('/')
