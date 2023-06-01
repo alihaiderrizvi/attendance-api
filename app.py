@@ -55,8 +55,8 @@ def mark_attendance():
         time_diff = current_datetime - reporting_time
         time_diff_min = time_diff.total_seconds() // 60
 
-        # repeated thumbprints - bacha masti krra hai
-        if time_diff <= timedelta(minutes=1):
+        # repeated thumbprints - bacha masti krra hai - check for 60 minutes
+        if time_diff <= timedelta(minutes=3):
             return {}
 
         # if difference is within 12 hours, mark departure
